@@ -21,6 +21,19 @@ Constraint handling includes:
 
 The output is an excel sheet with students and teams. Team numbers may not be sequential (drawn from 1:max_teams).
 
+### Data structure
+Team former assumes data is in a spreadsheet that looks something like (fake data):
+
+|    | first_name   | last_name   | email                     | gender   |   wam |   lab |
+|---:|:-------------|:------------|:--------------------------|:---------|------:|------:|
+|  0 | Mark         | Johnson     | ...  | M        | 51.13 |     3 |
+|  1 | Donald       | Walker      | ...  | M        | 60.04 |     1 |
+|  2 | Sarah        | Rhodes      | ...  | F        | 76.57 |     1 |
+|  3 | Steven       | Miller      | ...  | M        | 54.22 |     2 |
+|  4 | Javier       | Johnson     | ... | M        | 75.26 |     4 |
+
+**Only the gender, wam and lab columns are used.**
+
 ### Install
 
 ```
