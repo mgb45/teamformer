@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
-setup(  # pylint: disable=too-many-positional-arguments
+setup(  # pylint: disable=too-many-arguments
     name="team_former",
     version="0.1.0",
     author="Michael Burke",
