@@ -114,7 +114,7 @@ def allocate_teams(
 
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         print("No feasible solution found.")
-        return
+        return None
 
     final_teams = [-1] * num_students
     team_count = 0
@@ -129,6 +129,7 @@ def allocate_teams(
     student_df.to_excel(output_file, index=False)
     print(f"\n✅ {team_count} teams formed.")
     print(f"📄 Teams saved to {output_file}")
+    return student_df
 
 
 def main():
