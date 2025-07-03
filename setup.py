@@ -7,10 +7,10 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(  # pylint: disable=too-many-arguments
     name="team_former",
-    version="1.0.0",
+    version="1.0.1",
     author="Michael Burke",
     author_email="michael.g.burke@monash.edu",
-    description="A team allocation tool using OR-Tools and parameterized with fire.",
+    description="A team allocation tool using OR-Tools.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mgb45/teamformer",  # Replace with your repo URL
