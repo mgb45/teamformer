@@ -1,6 +1,6 @@
 # Teamformer
 
-Teamformer builds student teams for you. The primary objective is to form as few teams as are needed while ensuring constraints are met, and encouraging WAM (weighted average mark/GPA) balance across teams. The system is a wrapper around a CP-SAT solver using Google OR-Tools.
+Teamformer builds student teams for you. The primary objective is to form as few teams as needed while ensuring constraints are met and encouraging WAM (weighted average mark/GPA) balance across teams. The system is a wrapper around a CP-SAT solver using Google OR-Tools.
 
 Constraint handling includes:
 
@@ -16,7 +16,7 @@ Constraint handling includes:
 
 ✅ Deviation from average WAM across the class is penalised
 
-✅ Student preferences are favoured (positive and negative preferences now supported!)
+✅ **Student preferences are favoured (positive and negative preferences now supported!)**
 
 The output is an Excel sheet with students and teams. Team numbers may not be sequential (drawn from 1\:max\_teams).
 
@@ -26,16 +26,17 @@ The output is an Excel sheet with students and teams. Team numbers may not be se
 
 Teamformer expects data in a spreadsheet like this (fake example):
 
-|   | first\_name | last\_name | email | gender | wam  | lab | Prefer\_With | Prefer\_Not\_With |
-| - | ----------- | ---------- | ----- | ------ | ---- | --- | ------------ | ----------------- |
-| 0 | Mark        | Johnson    | ...   | M      | 51.1 | 3   | S2, S3       | S4                |
-| 1 | Donald      | Walker     | ...   | M      | 60.0 | 1   |              |                   |
-| 2 | Sarah       | Rhodes     | ...   | F      | 76.6 | 1   | S1           | S3                |
-| 3 | Steven      | Miller     | ...   | M      | 54.2 | 2   |              |                   |
-| 4 | Javier      | Johnson    | ...   | M      | 75.3 | 4   |              |                   |
+|   | Student\_ID | first\_name | last\_name | email | gender | wam  | lab | Prefer\_With | Prefer\_Not\_With |
+| - | ----------- | ----------- | ---------- | ----- | ------ | ---- | --- | ------------ | ----------------- |
+| 0 | S1          | Mark        | Johnson    | ...   | M      | 51.1 | 3   | S2, S3       | S4                |
+| 1 | S2          | Donald      | Walker     | ...   | M      | 60.0 | 1   |              |                   |
+| 2 | S3          | Sarah       | Rhodes     | ...   | F      | 76.6 | 1   | S1           | S3                |
+| 3 | S4          | Steven      | Miller     | ...   | M      | 54.2 | 2   |              |                   |
+| 4 | S5          | Javier      | Johnson    | ...   | M      | 75.3 | 4   |              |                   |
 
 **Columns used:**
 
+* `Student_ID`
 * `gender`
 * `wam`
 * `lab`
@@ -62,7 +63,7 @@ team_former --input_file=students.xlsx --sheet_name=0 --output_file=teams.xlsx -
 
 ### How to get a good solution
 
-Depending on your class sizes, demographics and lab distribution, you may struggle to find a feasible solution. Options to address this include:
+Depending on your class sizes, demographics, and lab distribution, you may struggle to find a feasible solution. Options to address this include:
 
 * Increase the max solve time — it may just be a matter of waiting longer
 * Reduce or remove the WAM weight penalty
