@@ -34,12 +34,12 @@ Teamformer expects data in a spreadsheet like this (fake example):
 | 3 | S4          | Steven      | Miller     | ...   | M      | 54.2 | 2   |              |                   |
 | 4 | S5          | Javier      | Johnson    | ...   | M      | 75.3 | 4   |              |                   |
 
-**Columns used:**
+**Columns required/optional:**
 
 * `Student_ID`
 * `gender`
-* `wam`
-* `lab`
+* `wam` (optional)
+* `lab` (optional)
 * `Prefer_With` (optional): comma-separated list of Student\_IDs the student wants to work with
 * `Prefer_Not_With` (optional): comma-separated list of Student\_IDs the student prefers not to work with
 
