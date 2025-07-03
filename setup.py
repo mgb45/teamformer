@@ -7,7 +7,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(  # pylint: disable=too-many-arguments
     name="team_former",
-    version="0.1.0",
+    version="1.0.0",
     author="Michael Burke",
     author_email="michael.g.burke@monash.edu",
     description="A team allocation tool using OR-Tools and parameterized with fire.",
