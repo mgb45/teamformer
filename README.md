@@ -48,7 +48,7 @@ Teamformer expects data in a spreadsheet like this (fake example):
 ### Install
 
 ```bash
-pip install -e .
+pip install team-former
 ```
 
 ---
