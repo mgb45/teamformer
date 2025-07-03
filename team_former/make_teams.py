@@ -7,12 +7,51 @@ import pandas as pd
 from ortools.sat.python import cp_model
 
 
+def parse_preferences(df):
+    """Parse positive and negative preferences from the DataFrame columns."""
+    id_to_index = {row["Student_ID"]: idx for idx, row in df.iterrows()}
+
+    positive_prefs = []
+    negative_prefs = []
+
+    has_pos = "Prefer_With" in df.columns
+    has_neg = "Prefer_Not_With" in df.columns
+
+    for _, row in df.iterrows():
+        student = row["Student_ID"].strip()
+
+        # Positive preferences
+        if has_pos and pd.notna(row["Prefer_With"]) and row["Prefer_With"].strip():
+            preferred = [s.strip() for s in row["Prefer_With"].split(",") if s.strip()]
+            for target in preferred:
+                positive_prefs.append((student, target))
+
+        # Negative preferences
+        if (
+            has_neg
+            and pd.notna(row["Prefer_Not_With"])
+            and row["Prefer_Not_With"].strip()
+        ):
+            not_preferred = [
+                s.strip() for s in row["Prefer_Not_With"].split(",") if s.strip()
+            ]
+            for target in not_preferred:
+                negative_prefs.append((student, target))
+
+    positive_prefs = [(id_to_index[a], id_to_index[b]) for (a, b) in positive_prefs]
+    negative_prefs = [(id_to_index[a], id_to_index[b]) for (a, b) in negative_prefs]
+
+    return positive_prefs, negative_prefs
+
+
 def allocate_teams(
     *,
     input_file="students.xlsx",
     sheet_name=0,
     output_file="class_teams.xlsx",
     wam_weight=0.05,
+    pos_pref_weight=0.05,
+    neg_pref_weight=0.1,
     min_team_size=4,
     max_team_size=5,
     max_solve_time=60,
@@ -25,6 +64,8 @@ def allocate_teams(
         sheet_name (int or str): Sheet index or name.
         output_file (str): Output Excel file with team assignments.
         wam_weight (float): Weight for WAM balancing in the objective.
+        pos_pref_weight (float): Weight for positive preference balancing in the objective.
+        neg_pref_weight (float): Weight for negative preference balancing in the objective.
         min_team_size (int): Minimum number of students per team.
         max_team_size (int): Maximum number of students per team.
         max_solve_time (int): Solver timeout in seconds.
@@ -40,6 +81,8 @@ def allocate_teams(
     student_labs = student_df["lab"].astype(int).values
     global_avg_wam = sum(wams) // len(wams)
     max_teams = num_students // min_team_size
+
+    pos_preferences, neg_preferences = parse_preferences(student_df)
 
     model = cp_model.CpModel()
 
@@ -103,8 +146,34 @@ def allocate_teams(
         model.AddMultiplicationEquality(squared_diff, [diff, diff])
         squared_deviation_terms.append(squared_diff)
 
+    pref_bonus_terms = []  # student indices who prefer each other
+    for i, j in pos_preferences:
+        for team in range(max_teams):
+            together = model.NewBoolVar(f"prefer_{i}_{j}_team_{team}")
+            model.AddBoolAnd([assign[i, team], assign[j, team]]).OnlyEnforceIf(together)
+            model.AddBoolOr(
+                [assign[i, team].Not(), assign[j, team].Not()]
+            ).OnlyEnforceIf(together.Not())
+            pref_bonus_terms.append(together)
+
+    negative_terms = []
+    for i, j in neg_preferences:
+        together_vars = []
+        for team in range(max_teams):
+            both = model.NewBoolVar(f"neg_pref_{i}_{j}_team_{team}")
+            model.AddBoolAnd([assign[i, team], assign[j, team]]).OnlyEnforceIf(both)
+            model.AddBoolOr(
+                [assign[i, team].Not(), assign[j, team].Not()]
+            ).OnlyEnforceIf(both.Not())
+            together_vars.append(both)
+        negative_terms.append(model.NewBoolVar(f"neg_pref_{i}_{j}_some_team"))
+    model.AddMaxEquality(negative_terms[-1], together_vars)
+
     model.Minimize(
-        sum(team_used) + int(wam_weight * 1000) * sum(squared_deviation_terms)
+        sum(team_used)
+        + int(wam_weight * 1000) * sum(squared_deviation_terms)
+        - pos_pref_weight * sum(pref_bonus_terms)
+        + neg_pref_weight * sum(negative_terms)
     )
 
     # Solve

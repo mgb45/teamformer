@@ -35,3 +35,6 @@ var/
 .installed.cfg
 *.egg
 MANIFES
+
+# Test files
+*.xlsx
